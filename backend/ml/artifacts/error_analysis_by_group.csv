@@ -1,0 +1,15 @@
+error_type,subject,year,error_count,average_article_length
+Fake classified as Real,Government News,2015,1,8367.0
+Fake classified as Real,Government News,2016,1,2357.0
+Fake classified as Real,Government News,2017,1,2429.0
+Fake classified as Real,News,2016,1,2566.0
+Fake classified as Real,News,2017,1,2164.0
+Fake classified as Real,US_News,2017,1,10662.0
+Fake classified as Real,left-news,2015,1,2318.0
+Fake classified as Real,left-news,2017,1,1960.0
+Fake classified as Real,politics,2015,4,6221.75
+Fake classified as Real,politics,2016,4,2475.75
+Fake classified as Real,politics,2017,6,3168.5
+Real classified as Fake,politicsNews,2016,2,4366.0
+Real classified as Fake,politicsNews,2017,2,3169.0
+Real classified as Fake,worldnews,2017,1,2545.0

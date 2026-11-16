@@ -1,0 +1,142 @@
+[
+    {
+        "id": "T01",
+        "category": "genuine",
+        "text": "The Reserve Bank of India is India's central bank and is responsible for monetary policy and regulating the banking system.",
+        "expected_ml": "Real",
+        "expected_fact_check": "SUPPORTED"
+    },
+    {
+        "id": "T02",
+        "category": "genuine",
+        "text": "The Indian Space Research Organisation launched Chandrayaan-3 in July 2023. The mission successfully achieved a soft landing on the Moon in August 2023.",
+        "expected_ml": "Real",
+        "expected_fact_check": "SUPPORTED"
+    },
+    {
+        "id": "T03",
+        "category": "genuine",
+        "text": "India's Constitution came into effect on 26 January 1950, and the country celebrates Republic Day on that date every year.",
+        "expected_ml": "Real",
+        "expected_fact_check": "SUPPORTED"
+    },
+    {
+        "id": "T04",
+        "category": "genuine",
+        "text": "The World Health Organization is a specialized agency of the United Nations that works on international public health.",
+        "expected_ml": "Real",
+        "expected_fact_check": "SUPPORTED"
+    },
+    {
+        "id": "T05",
+        "category": "genuine",
+        "text": "The Indian Parliament consists of the President of India and two Houses: the Lok Sabha and the Rajya Sabha.",
+        "expected_ml": "Real",
+        "expected_fact_check": "SUPPORTED"
+    },
+    {
+        "id": "T06",
+        "category": "fabricated",
+        "text": "The Indian government announced that every citizen will receive 50000 rupees every month starting next week without any application.",
+        "expected_ml": "Fake",
+        "expected_fact_check": "CONTRADICTED"
+    },
+    {
+        "id": "T07",
+        "category": "fabricated",
+        "text": "NASA confirmed that the Sun will disappear for exactly seven days next month and scientists have advised everyone to remain indoors.",
+        "expected_ml": "Fake",
+        "expected_fact_check": "CONTRADICTED"
+    },
+    {
+        "id": "T08",
+        "category": "fabricated",
+        "text": "The United Nations announced that all international internet services will permanently shut down on the first day of next year.",
+        "expected_ml": "Fake",
+        "expected_fact_check": "CONTRADICTED"
+    },
+    {
+        "id": "T09",
+        "category": "fabricated",
+        "text": "The Reserve Bank of India has announced that all paper currency will become worthless tomorrow and citizens must exchange it immediately.",
+        "expected_ml": "Fake",
+        "expected_fact_check": "CONTRADICTED"
+    },
+    {
+        "id": "T10",
+        "category": "fabricated",
+        "text": "Scientists have discovered that drinking ordinary tap water makes humans invisible for several hours.",
+        "expected_ml": "Fake",
+        "expected_fact_check": "CONTRADICTED"
+    },
+    {
+        "id": "T11",
+        "category": "mixed",
+        "text": "India launched Chandrayaan-3 in 2023, and the mission successfully landed on the Moon. The landing also proved that the Moon contains large forests and permanent human cities.",
+        "expected_ml": "Review",
+        "expected_fact_check": "MIXED"
+    },
+    {
+        "id": "T12",
+        "category": "mixed",
+        "text": "The World Health Organization was established in 1948, and it recently announced that eating one particular fruit can prevent every known infectious disease.",
+        "expected_ml": "Review",
+        "expected_fact_check": "MIXED"
+    },
+    {
+        "id": "T13",
+        "category": "mixed",
+        "text": "India became a republic in 1950, and the government has confirmed that every university examination will be cancelled permanently from next month.",
+        "expected_ml": "Review",
+        "expected_fact_check": "MIXED"
+    },
+    {
+        "id": "T14",
+        "category": "mixed",
+        "text": "The RBI regulates banks in India, and it has announced that every bank account will receive a guaranteed monthly return of 25 percent.",
+        "expected_ml": "Review",
+        "expected_fact_check": "MIXED"
+    },
+    {
+        "id": "T15",
+        "category": "mixed",
+        "text": "The Lok Sabha is one of the two Houses of Parliament, and a new law has supposedly made voting compulsory for every person under the age of ten.",
+        "expected_ml": "Review",
+        "expected_fact_check": "MIXED"
+    },
+    {
+        "id": "T16",
+        "category": "ambiguous",
+        "text": "The government is considering a new programme to provide financial assistance to eligible students, but no official announcement has been published.",
+        "expected_ml": "Review",
+        "expected_fact_check": "INSUFFICIENT_EVIDENCE"
+    },
+    {
+        "id": "T17",
+        "category": "ambiguous",
+        "text": "A new education initiative may begin in January 2027, according to information shared by unnamed sources.",
+        "expected_ml": "Review",
+        "expected_fact_check": "INSUFFICIENT_EVIDENCE"
+    },
+    {
+        "id": "T18",
+        "category": "ambiguous",
+        "text": "Officials are reportedly discussing changes to university admission rules, but the affected institutions and implementation date have not been identified.",
+        "expected_ml": "Review",
+        "expected_fact_check": "INSUFFICIENT_EVIDENCE"
+    },
+    {
+        "id": "T19",
+        "category": "ambiguous",
+        "text": "A company is expected to announce a major technology product soon, although its identity and the launch date have not been disclosed.",
+        "expected_ml": "Review",
+        "expected_fact_check": "INSUFFICIENT_EVIDENCE"
+    },
+    {
+        "id": "T20",
+        "category": "ambiguous",
+        "text": "Reports suggest that a new public transport project may be introduced in a major Indian city, but no city or official project details are available.",
+        "expected_ml": "Review",
+        "expected_fact_check": "INSUFFICIENT_EVIDENCE"
+    }
+]

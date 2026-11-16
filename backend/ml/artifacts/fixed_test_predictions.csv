@@ -1,0 +1,11 @@
+id,category,expected,predicted,correct
+T01,genuine,Real,Fake,False
+T02,genuine,Real,Real,True
+T03,genuine,Real,Fake,False
+T04,genuine,Real,Real,True
+T05,genuine,Real,Fake,False
+T06,fabricated,Fake,Fake,True
+T07,fabricated,Fake,Fake,True
+T08,fabricated,Fake,Fake,True
+T09,fabricated,Fake,Fake,True
+T10,fabricated,Fake,Fake,True

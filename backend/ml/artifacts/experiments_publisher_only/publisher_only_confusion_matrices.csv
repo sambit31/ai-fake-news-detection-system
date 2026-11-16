@@ -1,0 +1,5 @@
+dataset,model,actual_fake_pred_fake,actual_fake_pred_real,actual_real_pred_fake,actual_real_pred_real
+Internal_Test,Majority_Baseline,0,3491,0,4185
+Internal_Test,Publisher_Only,3456,35,5,4180
+External_Test,Majority_Baseline,0,11428,0,13864
+External_Test,Publisher_Only,11159,269,13330,534

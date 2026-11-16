@@ -1,0 +1,24 @@
+{
+    "random_state": 42,
+    "test_size": 0.2,
+    "publisher_names_masked": [
+        "associated press",
+        "washington post",
+        "new york times",
+        "fox news",
+        "ap news",
+        "abc news",
+        "cbs news",
+        "breitbart",
+        "bbc news",
+        "reuters",
+        "bbc",
+        "cnn"
+    ],
+    "training_articles": 30704,
+    "internal_test_articles": 7676,
+    "external_dataset_used": true,
+    "external_articles": 25292,
+    "baseline_model_modified": false,
+    "experiment_version": "v2"
+}
