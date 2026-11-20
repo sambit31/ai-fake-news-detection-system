@@ -1,18 +1,12 @@
 ﻿
-import { useState } from "react";
-
-import AnalysisResult from "./components/analysis/AnalysisResult";
-import AnalysisForm from "./components/analysis/AnalysisForm";
 import Header from "./components/layout/Header";
-import Sidebar from "./components/layout/Sidebar";
 import Footer from "./components/layout/Footer";
-import useNewsAnalysis from "./components/hooks/useNewsAnalysis";
+import { useAuth } from "./context/useAuth";
+import { useNavigate } from "react-router-dom";
+
 
 import {
   FileText,
-  Link as LinkIcon,
-  Upload,
-  ShieldCheck,
   BrainCircuit,
   SearchCheck,
   FileSearch,
@@ -23,11 +17,6 @@ import {
   LockKeyhole,
 } from "lucide-react";
 
-const tabs = [
-  { id: "text", label: "Article Text", icon: FileText },
-  { id: "pdf", label: "Upload PDF", icon: Upload },
-  { id: "url", label: "News URL", icon: LinkIcon },
-];
 
 const features = [
   {
@@ -57,43 +46,17 @@ const features = [
 ];
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState("text");
-  const [title, setTitle] = useState("");
-  const [articleText, setArticleText] = useState("");
-  const [url, setUrl] = useState("");
-  const [file, setFile] = useState(null);
-
-  const {
-    loading,
-    result,
-    error,
-    history,
-    resetResult,
-    handleAnalysis,
-  } = useNewsAnalysis();
-
-  const onAnalyze = (event) => {
-    handleAnalysis(
-      event,
-      activeTab,
-      title,
-      articleText,
-      file,
-      url
-    );
-  };
-
-  const clearForm = () => {
-    setTitle("");
-    setArticleText("");
-    setUrl("");
-    setFile(null);
-    resetResult();
-  };
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
+ 
 
   return (
     <div className="min-h-screen overflow-hidden text-slate-100">
-      <Header />
+<Header
+  user={user}
+  onAuthClick={() => navigate("/login")}
+  onLogout={logout}
+/>
 
       {/* Hero section */}
       <section
@@ -123,8 +86,8 @@ export default function App() {
           </p>
 
           <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
-            <a
-              href="#analyzer"
+            <button
+              onClick={() => navigate("/analyzer")}
               className="group flex items-center gap-2 rounded-xl bg-blue-600 px-7 py-4 text-sm font-bold text-white shadow-xl shadow-blue-600/20 transition hover:-translate-y-1 hover:bg-blue-500"
             >
               Analyze a news article
@@ -132,14 +95,15 @@ export default function App() {
                 size={18}
                 className="transition group-hover:translate-x-1"
               />
-            </a>
-
+            </button>
+          <div>
             <a
               href="#how-it-works"
               className="rounded-xl border border-white/10 bg-white/[0.03] px-7 py-4 text-sm font-semibold text-slate-300 transition hover:border-blue-400/40 hover:bg-white/[0.06]"
             >
               Discover how it works
             </a>
+            </div>
           </div>
 
           <div className="mt-12 flex flex-wrap items-center justify-center gap-x-8 gap-y-4 text-xs font-medium text-slate-500">
@@ -159,68 +123,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* Analyzer section */}
-      <section id="analyzer" className="px-5 py-16 sm:py-20">
-        <div className="mx-auto max-w-7xl">
-          <div className="mb-10 text-center">
-            <p className="mb-3 text-xs font-bold uppercase tracking-[0.25em] text-blue-400">
-              Start your investigation
-            </p>
-
-            <h2 className="text-3xl font-bold text-white sm:text-4xl">
-              Analyze a news article
-            </h2>
-
-            <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-slate-400">
-              Paste an article, upload a PDF, or enter a news URL.
-              Our system will analyze the available content.
-            </p>
-          </div>
-
-<div className="mx-auto grid w-full max-w-4xl grid-cols-1 items-start gap-7">
-            <div>
-              <div className="mx-auto w-full rounded-3xl border border-white/[0.09] bg-slate-900/70 p-4 shadow-2xl shadow-black/20 backdrop-blur-xl sm:p-7">
-                <div className="mb-6 flex items-center gap-3">
-                  <div className="rounded-xl bg-blue-500/10 p-3 text-blue-400">
-                    <ShieldCheck size={23} />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-white">
-                      VerityAI Analyzer
-                    </h3>
-                    <p className="mt-1 text-xs text-slate-500">
-                      Choose your preferred analysis method
-                    </p>
-                  </div>
-                </div>
-
-                <AnalysisForm
-                  tabs={tabs}
-                  activeTab={activeTab}
-                  setActiveTab={setActiveTab}
-                  resetResult={resetResult}
-                  title={title}
-                  setTitle={setTitle}
-                  articleText={articleText}
-                  setArticleText={setArticleText}
-                  file={file}
-                  setFile={setFile}
-                  url={url}
-                  setUrl={setUrl}
-                  error={error}
-                  loading={loading}
-                  handleAnalysis={onAnalyze}
-                  clearForm={clearForm}
-                />
-              </div>
-
-              <AnalysisResult result={result} />
-            </div>
-
-            <Sidebar history={history} />
-          </div>
-        </div>
-      </section>
+    
 
       {/* Features section */}
       <section id="features" className="border-y border-white/[0.06] bg-white/[0.015] px-5 py-20 sm:py-24">

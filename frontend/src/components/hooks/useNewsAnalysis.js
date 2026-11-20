@@ -1,4 +1,6 @@
-﻿import { useState } from "react";
+﻿
+import { useCallback, useEffect, useState } from "react";
+
 import {
   analyzeText,
   analyzePdf,
@@ -6,25 +8,112 @@ import {
   getAnalysisResult,
 } from "../../services/analysisService";
 
+import {
+  fetchHistory,
+  fetchHistoryStats,
+  deleteHistoryItem,
+} from "../../services/historyService";
+
+import { useAuth } from "../../context/useAuth";
+
 export default function useNewsAnalysis() {
+  const { token, isAuthenticated } = useAuth();
+
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
   const [history, setHistory] = useState([]);
+  const [stats, setStats] = useState(null);
+  const [historyLoading, setHistoryLoading] = useState(false);
 
   const resetResult = () => {
     setResult(null);
     setError("");
   };
 
-  const saveHistory = (data) => {
+  const loadHistory = useCallback(async () => {
+    if (!token || !isAuthenticated) {
+      setHistory([]);
+      setStats(null);
+      return;
+    }
+
+    setHistoryLoading(true);
+
+    try {
+      const [historyData, statsData] = await Promise.all([
+        fetchHistory(token, 1, 10),
+        fetchHistoryStats(token),
+      ]);
+
+      setHistory(historyData.items || []);
+      setStats(statsData);
+    } catch (err) {
+      console.error("History loading failed:", err);
+      setError(err.message || "Could not load analysis history.");
+    } finally {
+      setHistoryLoading(false);
+    }
+  }, [token, isAuthenticated]);
+
+  useEffect(() => {
+  let active = true;
+
+  if (isAuthenticated && token) {
+    Promise.all([
+      fetchHistory(token, 1, 10),
+      fetchHistoryStats(token),
+    ])
+      .then(([historyData, statsData]) => {
+        if (!active) return;
+
+        setHistory(historyData.items || []);
+        setStats(statsData);
+      })
+      .catch((err) => {
+        if (!active) return;
+
+        console.error("History loading failed:", err);
+        setError(err.message || "Could not load analysis history.");
+      })
+      .finally(() => {
+        if (active) {
+          setHistoryLoading(false);
+        }
+      });
+  } else {
+    Promise.resolve().then(() => {
+      if (!active) return;
+
+      setHistory([]);
+      setStats(null);
+      setHistoryLoading(false);
+    });
+  }
+
+  return () => {
+    active = false;
+  };
+}, [isAuthenticated, token]);
+
+
+  const handleDeleteHistory = async (analysisId) => {
+    try {
+      await deleteHistoryItem(token, analysisId);
+      await loadHistory();
+    } catch (err) {
+      setError(err.message || "Could not delete analysis history.");
+    }
+  };
+
+  const saveGuestHistory = (data) => {
     setHistory((previous) => [
       {
         id: Date.now(),
         source: data.source || "unknown",
         title: data.title || "Untitled article",
         prediction: data.prediction || "UNKNOWN",
-        time: new Date().toLocaleTimeString(),
+        time: new Date().toISOString(),
       },
       ...previous,
     ]);
@@ -62,11 +151,11 @@ export default function useNewsAnalysis() {
       let response;
 
       if (activeTab === "text") {
-        response = await analyzeText(title, articleText);
+        response = await analyzeText(title, articleText, token);
       } else if (activeTab === "pdf") {
-        response = await analyzePdf(file);
+        response = await analyzePdf(file, token);
       } else if (activeTab === "url") {
-        response = await analyzeUrl(url);
+        response = await analyzeUrl(url, token);
       } else {
         throw new Error("Please select a valid analysis method.");
       }
@@ -74,7 +163,12 @@ export default function useNewsAnalysis() {
       const data = await getAnalysisResult(response);
 
       setResult(data);
-      saveHistory(data);
+
+      if (isAuthenticated) {
+        await loadHistory();
+      } else {
+        saveGuestHistory(data);
+      }
     } catch (err) {
       setError(
         err.message === "Failed to fetch"
@@ -91,8 +185,12 @@ export default function useNewsAnalysis() {
     result,
     error,
     history,
+    stats,
+    historyLoading,
     setError,
     resetResult,
     handleAnalysis,
+    handleDeleteHistory,
+    refreshHistory: loadHistory,
   };
 }

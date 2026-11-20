@@ -5,18 +5,26 @@ import socket
 
 from io import BytesIO
 from pathlib import Path
+from unittest import result
 from urllib.parse import urlparse
 
 import httpx
 import joblib
 import trafilatura
 
-from fastapi import FastAPI, HTTPException, UploadFile, File
+from fastapi import FastAPI, HTTPException, UploadFile, File, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from pypdf import PdfReader
 from starlette.concurrency import run_in_threadpool
 
+from sqlalchemy.orm import Session
+
+from api.database import Base, engine, get_db
+from api import models
+from api.models import User
+from api.auth import router as auth_router, get_optional_current_user
+from api.history import router as history_router, save_analysis
 
 # --------------------------------------------------
 # PATH CONFIGURATION
@@ -56,7 +64,18 @@ app = FastAPI(
     ),
     version="1.2.0"
 )
+# --------------------------------------------------
+# DATABASE INITIALIZATION
+# --------------------------------------------------
 
+Base.metadata.create_all(bind=engine)
+
+
+# --------------------------------------------------
+# AUTHENTICATION ROUTER
+# --------------------------------------------------
+
+app.include_router(auth_router)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -67,6 +86,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(history_router)
 
 
 # --------------------------------------------------
@@ -355,14 +376,30 @@ def health_check():
 # TEXT ANALYSIS
 # --------------------------------------------------
 
-@app.post("/predict")
-def predict_news(request: PredictionRequest):
 
-    return analyze_article(
+@app.post("/predict")
+def predict_news(
+    request: PredictionRequest,
+    current_user: User | None = Depends(get_optional_current_user),
+    db: Session = Depends(get_db),
+):
+    result = analyze_article(
         title=request.title,
         text=request.text,
         source="text"
     )
+
+    if current_user:
+        save_analysis(
+            db=db,
+            user=current_user,
+            result=result,
+            source="text",
+            input_text=request.text,
+        )
+
+    return result
+
 
 
 # --------------------------------------------------
@@ -370,7 +407,11 @@ def predict_news(request: PredictionRequest):
 # --------------------------------------------------
 
 @app.post("/analyze-pdf")
-async def analyze_pdf(file: UploadFile = File(...)):
+async def analyze_pdf(
+    file: UploadFile = File(...),
+    current_user: User | None = Depends(get_optional_current_user),
+    db: Session = Depends(get_db),
+):
 
     if not file.filename or not file.filename.lower().endswith(".pdf"):
         raise HTTPException(
@@ -393,7 +434,6 @@ async def analyze_pdf(file: UploadFile = File(...)):
         )
 
     try:
-
         pdf = PdfReader(BytesIO(file_bytes), strict=False)
 
         if pdf.is_encrypted:
@@ -414,7 +454,6 @@ async def analyze_pdf(file: UploadFile = File(...)):
         extracted_pages = []
 
         for page in pdf.pages:
-
             page_text = page.extract_text() or ""
 
             if page_text.strip():
@@ -433,8 +472,6 @@ async def analyze_pdf(file: UploadFile = File(...)):
 
         title = Path(file.filename).stem
 
-        # Fact-checking uses external network calls.
-        # Run the synchronous analysis in a worker thread.
         result = await run_in_threadpool(
             analyze_article,
             title,
@@ -444,6 +481,16 @@ async def analyze_pdf(file: UploadFile = File(...)):
 
         result["filename"] = file.filename
         result["pages"] = len(pdf.pages)
+
+        if current_user:
+            save_analysis(
+                db=db,
+                user=current_user,
+                result=result,
+                source="pdf",
+                input_text=extracted_text,
+                filename=file.filename,
+            )
 
         return result
 
@@ -459,18 +506,24 @@ async def analyze_pdf(file: UploadFile = File(...)):
     finally:
         await file.close()
 
+# --------------------------------------------------
+# NEWS URL ANALYSIS
+# --------------------------------------------------
 
 # --------------------------------------------------
 # NEWS URL ANALYSIS
 # --------------------------------------------------
 
 @app.post("/analyze-url")
-async def analyze_url(request: URLRequest):
+async def analyze_url(
+    request: URLRequest,
+    current_user: User | None = Depends(get_optional_current_user),
+    db: Session = Depends(get_db),
+):
 
     validate_public_url(request.url)
 
     try:
-
         async with httpx.AsyncClient(
             timeout=20.0,
             follow_redirects=True,
@@ -484,7 +537,6 @@ async def analyze_url(request: URLRequest):
         ) as client:
 
             async with client.stream("GET", request.url) as response:
-
                 response.raise_for_status()
 
                 content_type = response.headers.get(
@@ -504,7 +556,6 @@ async def analyze_url(request: URLRequest):
                 total_size = 0
 
                 async for chunk in response.aiter_bytes():
-
                     total_size += len(chunk)
 
                     if total_size > MAX_URL_SIZE:
@@ -553,6 +604,16 @@ async def analyze_url(request: URLRequest):
         )
 
         result["url"] = request.url
+
+        if current_user:
+            save_analysis(
+                db=db,
+                user=current_user,
+                result=result,
+                source="url",
+                input_text=extracted_text,
+                input_url=request.url,
+            )
 
         return result
 

@@ -1,31 +1,42 @@
-﻿const API_BASE = "http://127.0.0.1:8000";
+﻿
+const API_BASE =
+  import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
 
-export async function analyzeText(title, text) {
+// Add the access token only when a user is logged in.
+function getHeaders(token, additionalHeaders = {}) {
+  return {
+    ...additionalHeaders,
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
+}
+
+export async function analyzeText(title, text, token = null) {
   return fetch(`${API_BASE}/predict`, {
     method: "POST",
-    headers: {
+    headers: getHeaders(token, {
       "Content-Type": "application/json",
-    },
+    }),
     body: JSON.stringify({ title, text }),
   });
 }
 
-export async function analyzePdf(file) {
+export async function analyzePdf(file, token = null) {
   const formData = new FormData();
   formData.append("file", file);
 
   return fetch(`${API_BASE}/analyze-pdf`, {
     method: "POST",
+    headers: getHeaders(token),
     body: formData,
   });
 }
 
-export async function analyzeUrl(url) {
+export async function analyzeUrl(url, token = null) {
   return fetch(`${API_BASE}/analyze-url`, {
     method: "POST",
-    headers: {
+    headers: getHeaders(token, {
       "Content-Type": "application/json",
-    },
+    }),
     body: JSON.stringify({ url }),
   });
 }
