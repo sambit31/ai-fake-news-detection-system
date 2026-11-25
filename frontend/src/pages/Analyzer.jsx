@@ -8,7 +8,6 @@ import {
   FileText,
   Upload,
   Link as LinkIcon,
-  LayoutDashboard,
   History,
   ScanSearch,
 } from "lucide-react";

@@ -1,0 +1,35 @@
+# ==============================
+# VerityAI - Python Dependencies
+# ==============================
+
+# Backend API
+fastapi
+uvicorn[standard]
+pydantic
+python-multipart
+
+# Machine Learning and Data Science
+numpy
+pandas
+scikit-learn
+nltk
+joblib
+
+# PDF and Webpage Processing
+pypdf
+httpx
+trafilatura
+
+# AI Fact Checking
+groq
+tavily-python
+python-dotenv
+
+# Authentication and Database
+SQLAlchemy
+PyJWT
+pwdlib[argon2]
+email-validator
+
+# Development
+# ipykernel
